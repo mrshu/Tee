@@ -6,12 +6,18 @@ class Tee{
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\.([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1['\\2']; ?>");
 	
+
+	private $_tags = array();
+	
+	// 
 	private $_source = '';
 	private $_filename = '';
 	private $_cache_dir = '';
 
-	const TAG_START = '{{';
-	const TAG_END   = '}}';
+	const TAG_START = '{%';
+	const TAG_END   = '%}';
+	
+	const TAG_REGEX = '\s([_a-zA-Z][_a-zA-Z0-9]*)\s(.*)\s';
 	
 	public function __construct($file = '')
 	{
@@ -61,12 +67,26 @@ class Tee{
 		return $output;
 	}
 
+	private function tag_replace_callback($matches)
+	{
+		if(array_key_exists($matches[1],$this->_tags)){
+				return "<?php echo @".
+					$this->_tags[$matches[1]].
+					"('".
+					 addslashes($matches[2])
+					."'); ?>";
+		}else{
+			return "";
+		}
+	}
+
 	public function replace($source = NULL,$ret = false)
 	{
 		if($source == NULL){
 			$source = $this->_source;
 		}
 
+		// simple replace regexes
 		foreach($this->_REGEXES as $regexin => $out){
 			$source = preg_replace(
 					$regexin,
@@ -74,6 +94,14 @@ class Tee{
 					$source);
 		}
 		
+		$tag_regex = '/'.preg_quote(self::TAG_START).
+				self::TAG_REGEX.
+				preg_quote(self::TAG_END).'/';
+
+		$source = preg_replace_callback($tag_regex,
+					array($this,'tag_replace_callback'),
+					$source);	
+
 		if($ret){
 			return $source;
 		}else{
@@ -82,7 +110,23 @@ class Tee{
 
 		return true;
 	}
-	
+
+	public function add_tag($name, $function)
+	{
+		if(!preg_match('/([_a-zA-Z][_a-zA-Z0-9]*)/',$name)){
+			throw new Exception("Invalid tag name '$name' ");
+		}
+		
+		if(is_callable($function,true,$real_function)){
+			$this->_tags[$name] = $function /*$real_function*/;
+			return true;
+		}else{
+			throw new Exception("Uncallable function '$function' ");
+		}
+
+
+	}
+
 	public function load_file($filename)
 	{
 		$dir = dirname($this->_filename);
