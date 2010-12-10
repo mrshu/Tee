@@ -3,6 +3,8 @@ class Tee{
 	
 	private $_REGEXES = 
 	array('/\{\%\sinclude\s"(.*)"\s\%\}/e' => 'eval(\'return $this->load_file("\\1");\');',
+		'/\{\%\sif\s(.*)\s\%\}/' => "<?php if(@$\\1): ?>",
+		'/\{\%\sendif\s\%\}/' => "<?php endif; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\.([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1['\\2']; ?>");
 	

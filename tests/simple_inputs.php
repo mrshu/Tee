@@ -41,7 +41,6 @@ class SimpleTemplateTest extends UnitTestCase{
 		$output = file_get_contents(__DIR__.'/output_files/array_replacement.html');
 		$this->assertEqual($tee->render(),$output);
 	}
-	
 
 }
 
