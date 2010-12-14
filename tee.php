@@ -1,17 +1,19 @@
 <?php
+if(!defined(__DIR__))   define('__DIR__',dirname(__FILE__));
+
 class Tee{
 	
 	private $_REGEXES = 
-	array('/\{\%\sinclude\s"(.*)"\s\%\}/e' => 'eval(\'return $this->load_file("\\1");\');',
+	array(/* '/\{\%\sinclude\s("|\')(.*)("|\')\s\%\}/e' => '$this->load_file("\\1");', */
 		'/\{\%\sif\s(.*)\s\%\}/' => "<?php if(@$\\1): ?>",
 		'/\{\%\sendif\s\%\}/' => "<?php endif; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\.([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1['\\2']; ?>");
 	
 
-	private $_tags = array();
+	private static $_tags = array();
 	
-	// 
+	//  
 	private $_source = '';
 	private $_filename = '';
 	private $_cache_dir = '';
@@ -71,9 +73,9 @@ class Tee{
 
 	private function tag_replace_callback($matches)
 	{
-		if(array_key_exists($matches[1],$this->_tags)){
+		if(array_key_exists($matches[1],self::$_tags)){
 				return "<?php echo @".
-					$this->_tags[$matches[1]].
+					self::$_tags[$matches[1]].
 					"('".
 					 addslashes($matches[2])
 					."'); ?>";
@@ -96,6 +98,19 @@ class Tee{
 					$source);
 		}
 		
+
+		// include tag
+		if(preg_match_all('/\{\%\sinclude\s("|\')(.*)("|\')\s\%\}/e',
+					$source,
+					$matches)){
+
+			$source = str_replace(
+					$matches[0][0],
+					$this->load_file($matches[2][0]),
+					$source);
+
+		}
+
 		$tag_regex = '/'.preg_quote(self::TAG_START).
 				self::TAG_REGEX.
 				preg_quote(self::TAG_END).'/';
@@ -113,14 +128,14 @@ class Tee{
 		return true;
 	}
 
-	public function add_tag($name, $function)
+	public static function add_tag($name, $function)
 	{
 		if(!preg_match('/([_a-zA-Z][_a-zA-Z0-9]*)/',$name)){
 			throw new Exception("Invalid tag name '$name' ");
 		}
 		
 		if(is_callable($function,true,$real_function)){
-			$this->_tags[$name] = $function /*$real_function*/;
+			self::$_tags[$name] = $function /*$real_function*/;
 			return true;
 		}else{
 			throw new Exception("Uncallable function '$function' ");
@@ -168,11 +183,12 @@ class Tee{
 		return @file_put_contents($cached_file,$this->_source);	
 	}
 }
+
 /*
 $t = new Tee();
+
 $a = $t->file(dirname(__FILE__)."/tests/input_files/variables.phtml");
 $t->strong = "asd";
 echo $t->render();
 */
-
 ?>
