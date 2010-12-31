@@ -6,6 +6,7 @@ class Tee{
 	private $_REGEXES = 
 	array(/* '/\{\%\sinclude\s("|\')(.*)("|\')\s\%\}/e' => '$this->load_file("\\1");', */
 		'/\{\%\sif\s(.*)\s\%\}/' => "<?php if(@$\\1): ?>",
+		'/\{\%\selse\s\%\}/' => "<?php else: ?>",
 		'/\{\%\sendif\s\%\}/' => "<?php endif; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\.([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1['\\2']; ?>");
@@ -13,7 +14,6 @@ class Tee{
 
 	private static $_tags = array();
 	
-	//  
 	private $_source = '';
 	private $_filename = '';
 	private $_cache_dir = '';
@@ -103,12 +103,10 @@ class Tee{
 		if(preg_match_all('/\{\%\sinclude\s("|\')(.*)("|\')\s\%\}/e',
 					$source,
 					$matches)){
-
 			$source = str_replace(
 					$matches[0][0],
 					$this->load_file($matches[2][0]),
 					$source);
-
 		}
 
 		$tag_regex = '/'.preg_quote(self::TAG_START).
