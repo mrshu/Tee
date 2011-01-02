@@ -8,6 +8,8 @@ class Tee{
 		'/\{\%\sif\s(.*)\s\%\}/' => "<?php if(@$\\1): ?>",
 		'/\{\%\selse\s\%\}/' => "<?php else: ?>",
 		'/\{\%\sendif\s\%\}/' => "<?php endif; ?>",
+		'/\{\%\sfor\s([_a-zA-Z][_a-zA-Z0-9]*)\sin\s([_a-zA-Z][_a-zA-Z0-9]*)\s\%\}/' => "<?php foreach(@$\\2 as $\\1): ?>",
+		'/\{\%\sendfor\s\%\}/' => "<?php endforeach; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1; ?>",
 		'/\{\{\s*([_a-zA-Z][_a-zA-Z0-9]*)\.([_a-zA-Z][_a-zA-Z0-9]*)\s*\}\}/' => "<?php echo @$\\1['\\2']; ?>");
 	

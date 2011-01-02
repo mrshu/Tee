@@ -79,6 +79,26 @@ class TagTest extends UnitTestCase{
 
 	}
 
+	public function testForTag()
+	{
+		$tee = new Tee();
+		//$tee->clean_cache();
+		$tee->file(__DIR__.'/input_files/for_tag.phtml');
+		
+		$tee->users = array(
+			array('name' => 'Joe Doe', 'email' => 'joe@doe.com'),
+			array('name' => 'Linus Torvalds', 'email' => 'torvalds@cs.helsinki.fi')
+		);
+		
+		require_once "uDebug.php";
+		$o = $tee->render();
+		$output = file_get_contents(__DIR__.'/output_files/for_tag.html');
+		uD::dump($output);
+		uD::dump($o);
+		$this->assertEqual($o,$output);
+
+	}
+
 } 
 
 
