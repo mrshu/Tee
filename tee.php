@@ -1,5 +1,5 @@
 <?php
-if(!defined(__DIR__))   define('__DIR__',dirname(__FILE__));
+if(!defined('__DIR__'))   define('__DIR__',dirname(__FILE__));
 
 class Tee{
 	
