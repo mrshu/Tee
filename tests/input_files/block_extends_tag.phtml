@@ -1,0 +1,10 @@
+{% extends "block_template.phtml" %}
+
+{% block main %}
+	<ul>
+	{% for item in menu %}
+		<li>{{ item }}</li>
+	{% endfor %}
+	</ul>
+{% endblock %}
+

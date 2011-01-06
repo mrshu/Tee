@@ -2,7 +2,7 @@
 require_once("simpletest/autorun.php");
 
 require_once('../tee.php');
-
+require_once('uDebug.php');
 class TagTest extends UnitTestCase{
 
 
@@ -93,10 +93,21 @@ class TagTest extends UnitTestCase{
 		require_once "uDebug.php";
 		$o = $tee->render();
 		$output = file_get_contents(__DIR__.'/output_files/for_tag.html');
-		uD::dump($output);
-		uD::dump($o);
 		$this->assertEqual($o,$output);
 
+	}
+
+	public function testBlockExtendsTag()
+	{
+		$tee = new Tee();
+		//$tee->clean_cache();
+		$tee->file(__DIR__.'/input_files/block_extends_tag.phtml');
+		
+		$tee->menu= array("Home", "Blog");
+		$r = $tee->render();
+		$output = file_get_contents(__DIR__.'/output_files/block_extends_tag.html');
+		$this->assertEqual($r ,$output);
+		
 	}
 
 } 
