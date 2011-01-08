@@ -78,7 +78,22 @@ class TagTest extends UnitTestCase{
 		$this->assertEqual($tee->render(),$output);
 
 	}
+	
+	public function testIfElseArrayTag()
+	{
+		$tee = new Tee();
+		$tee->file(__DIR__.'/input_files/if_else_array_tag.phtml');
+		
+		$tee->user = array('name' => 'Joe');
+		
+		$output = file_get_contents(__DIR__.'/output_files/if_else_array_tag.html');
+		$o = $tee->render();
+		uD::dump($o);
+		uD::dump($output);
+		$this->assertEqual($o,$output);
 
+
+	}
 	public function testForTag()
 	{
 		$tee = new Tee();
@@ -90,7 +105,6 @@ class TagTest extends UnitTestCase{
 			array('name' => 'Linus Torvalds', 'email' => 'torvalds@cs.helsinki.fi')
 		);
 		
-		require_once "uDebug.php";
 		$o = $tee->render();
 		$output = file_get_contents(__DIR__.'/output_files/for_tag.html');
 		$this->assertEqual($o,$output);

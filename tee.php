@@ -5,6 +5,7 @@ class Tee{
 	
 	private $_REGEXES = 
 	array( /* '/\{\%\sextends\s"(.*)"\s\%\}/e' => 'eval(return $this->load_file("\\1"));', */
+		'/\{\%\sif\s([_a-zA-Z][_a-zA-Z0-9]*)\.([_a-zA-Z][_a-zA-Z0-9]*)\s\%\}/' => "<?php if(@$\\1['\\2']): ?>",
 		'/\{\%\sif\s(.*)\s\%\}/' => "<?php if(@$\\1): ?>",
 		'/\{\%\selse\s\%\}/' => "<?php else: ?>",
 		'/\{\%\sendif\s\%\}/' => "<?php endif; ?>",
@@ -220,12 +221,4 @@ class Tee{
 		return @file_put_contents($cached_file,$this->_source);	
 	}
 }
-
-/*
-   $t = new Tee();
-
-   $a = $t->file(dirname(__FILE__)."/tests/input_files/variables.phtml");
-   $t->strong = "asd";
-   echo $t->render();
- */
 ?>
